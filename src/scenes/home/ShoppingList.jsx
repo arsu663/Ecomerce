@@ -17,15 +17,19 @@ const ShoppingList = () => {
 
   async function getItems() {
     const items = await fetch(
-      "http://localhost:1337/api/items?populate-image",
+      "http://localhost:1337/api/items?populate=*",
+    //   http://localhost:1337/api/[your api]?populate=*
+    //http://localhost:1337/api/[your api]?populate=ImagesRepeater.image
       { method: "GET" }
     );
     const itemJson = await items.json();
     dispatch(setItems(itemJson.data));
   }
+  
   useEffect(() => {
     getItems();
-  }, []);
+  }, []); //// eslint-disable-line react-hooks/exhaustive-deps
+
 
   const topRatedItems = items.filter(
     (item) => item.attributes.category === "topRated"
@@ -33,7 +37,7 @@ const ShoppingList = () => {
   const newArrivalsItems = items.filter(
     (item) => item.attributes.category === "newArrivals"
   );
-  const bestSelletItems = items.filter(
+  const bestSellerItems = items.filter(
     (item) => item.attributes.category === "bestSeller"
   );
 
@@ -61,8 +65,30 @@ const ShoppingList = () => {
         <Tab label="BEST SELLERS" value="bestSellers" />
         <Tab label="TOP RATED" value="topRated" />
       </Tabs>
-      <Box>
-          
+      <Box
+        margin="0 auto"
+        display="grid"
+        gridTemplateColumns="repeat(auto-fill, 30px)"
+        justifyContent="space-around"
+        rowGap="20px"
+        columnGap="1.33%"
+      >
+        {value === "all" &&
+          items.map((item) => (
+            <Item item={item} key={`${item.name}-${item.id}`} />
+          ))}
+        {value === "newArrivals" &&
+          newArrivalsItems.map((item) => (
+            <Item item={item} key={`${item.name}-${item.id}`} />
+          ))}
+        {value === "bestSellers" &&
+          bestSellerItems.map((item) => (
+            <Item item={item} key={`${item.name}-${item.id}`} />
+          ))}
+        {value === "topRated" &&
+          topRatedItems.map((item) => (
+            <Item item={item} key={`${item.name}-${item.id}`} />
+          ))}
       </Box>
     </Box>
   );
